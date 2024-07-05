@@ -33,6 +33,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
     // Call your API or perform registration logic
   }
 
+  Widget buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+    bool obscureText = false,
+    Widget? suffixIcon,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      height: 50,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x40000000),
+            offset: Offset(0, 1),
+            blurRadius: 4,
+            spreadRadius: 0,
+          ),
+        ],
+        color: whiteColor,
+      ),
+      width: MediaQuery.of(context).size.width * 0.8,
+      child: TextField(
+        controller: controller,
+        obscureText: obscureText,
+        decoration: InputDecoration(
+          suffixIcon: suffixIcon,
+          border: InputBorder.none,
+          hintText: hintText,
+          hintStyle: lightTextStyle.copyWith(fontSize: 15, color: greyLightColor),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,87 +79,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 24),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  height: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x40000000),
-                        offset: Offset(0, 1),
-                        blurRadius: 4,
-                        spreadRadius: 0,
-                      ),
-                    ],
-                    color: whiteColor,
-                  ),
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  child: TextField(
-                    controller: fullNameController,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Nom',
-                      hintStyle: lightTextStyle.copyWith(fontSize: 15, color: greyLightColor),
-                    ),
-                  ),
+                buildTextField(
+                  controller: fullNameController,
+                  hintText: 'Nom',
                 ),
                 const SizedBox(height: 24),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  height: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x40000000),
-                        offset: Offset(0, 1),
-                        blurRadius: 4,
-                        spreadRadius: 0,
-                      ),
-                    ],
-                    color: whiteColor,
-                  ),
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  child: TextField(
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Adresse mail',
-                      hintStyle: lightTextStyle.copyWith(fontSize: 15, color: greyLightColor),
-                    ),
-                  ),
+                buildTextField(
+                  controller: emailController,
+                  hintText: 'Adresse mail',
                 ),
                 const SizedBox(height: 24),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  height: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x40000000),
-                        offset: Offset(0, 1),
-                        blurRadius: 4,
-                        spreadRadius: 0,
-                      ),
-                    ],
-                    color: whiteColor,
-                  ),
-                  child: TextField(
-                    controller: passwordController,
-                    obscureText: _secureText,
-                    decoration: InputDecoration(
-                      suffixIcon: IconButton(
-                        onPressed: showHide,
-                        icon: _secureText
-                            ? const Icon(Icons.visibility_off, size: 20)
-                            : const Icon(Icons.visibility, size: 20),
-                      ),
-                      border: InputBorder.none,
-                      hintText: 'Mot de passe',
-                      hintStyle: lightTextStyle.copyWith(fontSize: 15, color: greyLightColor),
-                    ),
+                buildTextField(
+                  controller: passwordController,
+                  hintText: 'Mot de passe',
+                  obscureText: _secureText,
+                  suffixIcon: IconButton(
+                    onPressed: showHide,
+                    icon: _secureText
+                        ? const Icon(Icons.visibility_off, size: 20)
+                        : const Icon(Icons.visibility, size: 20),
                   ),
                 ),
                 const SizedBox(height: 30),
