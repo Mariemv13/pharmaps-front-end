@@ -19,7 +19,11 @@ class ButtonPrimary extends StatelessWidget {
             borderRadius: BorderRadius.circular(20)
           )
         ),
-        child: Text(text!),
+        child: Text(
+          text!,
+          style: const TextStyle(color: Colors.white),
+        ),
+    
       ),
     );
   }

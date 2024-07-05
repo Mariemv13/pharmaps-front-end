@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pharmaps/widgets/button_primary.dart';
+import 'package:pharmaps/pages/splash/splash_screen.dart';
+import 'package:pharmaps/utils/constants.dart';
+
+
 
 void main() {
   runApp(const MyApp());
@@ -10,14 +13,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: ButtonPrimary(
-            text: "demarrer",
-          ),
-        ),
-      ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(primaryColor: greenColor),
+      home: const SplashScreen(),
     );
   }
 }
