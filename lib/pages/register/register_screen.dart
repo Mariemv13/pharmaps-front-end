@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:pharmaps/api/url_api.dart';
 import 'package:pharmaps/pages/login/login_screen.dart';
 import 'package:pharmaps/utils/constants.dart';
 import 'package:pharmaps/widgets/button_primary.dart';
@@ -24,13 +28,55 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
   }
 
-  void registerSubmit() {
-    // Implement your registration logic here
-    // Example:
-    // String fullName = fullNameController.text;
-    // String email = emailController.text;
-    // String password = passwordController.text;
-    // Call your API or perform registration logic
+  registerSubmit() async {
+    var registerUrl = Uri.parse(BASEURL.apiRegister);
+    final response = await http.post(registerUrl, body: {
+      "fullname": fullNameController.text,
+      "email": emailController.text,
+      "password": passwordController.text,
+    });
+    final data = jsonDecode(response.body);
+
+    int value = data['value'];
+    String message = data['message'];
+
+    if (value == 1) {
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) => AlertDialog(
+                title: const Text("Information"),
+                content: Text(message),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const LoginScreen()),
+                            (route) => false);
+                      },
+                      child: const Text("Ok"))
+                ],
+              ));
+      setState(() {});
+    } else {
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) => AlertDialog(
+                title: const Text("Information"),
+                content: Text(message),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Ok"))
+                ],
+              ));
+      setState(() {});
+    }
   }
 
   Widget buildTextField({
@@ -62,7 +108,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           suffixIcon: suffixIcon,
           border: InputBorder.none,
           hintText: hintText,
-          hintStyle: lightTextStyle.copyWith(fontSize: 15, color: greyLightColor),
+          hintStyle:
+              lightTextStyle.copyWith(fontSize: 15, color: greyLightColor),
         ),
       ),
     );
@@ -111,7 +158,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         context: context,
                         builder: (context) => AlertDialog(
                           title: const Text("Attention !!"),
-                          content: const Text("Veuillez remplir tous les champs"),
+                          content:
+                              const Text("Veuillez remplir tous les champs"),
                           actions: [
                             TextButton(
                               onPressed: () {
@@ -133,19 +181,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     Text(
                       "Déjà un compte? ",
-                      style: lightTextStyle.copyWith(color: greyLightColor, fontSize: 15),
+                      style: lightTextStyle.copyWith(
+                          color: greyLightColor, fontSize: 15),
                     ),
                     InkWell(
                       onTap: () {
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => const LoginScreen()),
+                          MaterialPageRoute(
+                              builder: (context) => const LoginScreen()),
                           (route) => false,
                         );
                       },
                       child: Text(
                         "Se Connecter",
-                        style: boldTextStyle.copyWith(color: greenColor, fontSize: 15),
+                        style: boldTextStyle.copyWith(
+                            color: greenColor, fontSize: 15),
                       ),
                     ),
                   ],
