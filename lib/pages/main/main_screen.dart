@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pharmaps/pages/home/home_screen.dart';
+import 'package:pharmaps/pages/profile/profile_screen.dart';
 import 'package:pharmaps/utils/constants.dart';
 
 class MainScreen extends StatefulWidget {
@@ -15,6 +16,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final pageList = [
     const HomeScreen(),
+    const ProfileScreen(),
   ];
 
   onTappedItem(int index) {
