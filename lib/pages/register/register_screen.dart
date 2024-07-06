@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pharmaps/api/url_api.dart';
@@ -9,7 +8,7 @@ import 'package:pharmaps/widgets/button_primary.dart';
 import 'package:pharmaps/widgets/logo_space.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  const RegisterScreen({super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -21,6 +20,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController passwordController = TextEditingController();
 
   bool _secureText = true;
+  bool _isLoading = false;
 
   void showHide() {
     setState(() {
@@ -28,54 +28,92 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
   }
 
-  registerSubmit() async {
-    var registerUrl = Uri.parse(BASEURL.apiRegister);
-    final response = await http.post(registerUrl, body: {
-      "fullname": fullNameController.text,
-      "email": emailController.text,
-      "password": passwordController.text,
+  Future<void> registerSubmit() async {
+    setState(() {
+      _isLoading = true;
     });
-    final data = jsonDecode(response.body);
 
-    int value = data['value'];
-    String message = data['message'];
+    try {
+      var registerUrl = Uri.parse(BASEURL.apiRegister);
+      final response = await http.post(registerUrl,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({
+          "fullname": fullNameController.text,
+          "email": emailController.text,
+          "password": passwordController.text,
+        }));
 
-    if (value == 1) {
-      showDialog(
-          barrierDismissible: false,
+      if (!mounted) return;
+
+      if (response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+
+        if (data is Map<String, dynamic> && data.containsKey('id')) {
+          showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text("Inscription réussie"),
+              content: const Text("Utilisateur enregistré avec succès"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      (route) => false,
+                    );
+                  },
+                  child: const Text("Ok"),
+                ),
+              ],
+            ),
+          );
+        } else {
+          throw Exception("Invalid response format");
+        }
+      } else {
+        print('Réponse échouée: ${response.statusCode}');
+        print('Corps de la réponse: ${response.body}');
+        showDialog(
           context: context,
           builder: (context) => AlertDialog(
-                title: const Text("Information"),
-                content: Text(message),
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const LoginScreen()),
-                            (route) => false);
-                      },
-                      child: const Text("Ok"))
-                ],
-              ));
-      setState(() {});
-    } else {
+            title: const Text("Erreur"),
+            content: const Text("Une erreur s'est produite. Veuillez réessayer."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Ok"),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      print('Exception: $e');
       showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (context) => AlertDialog(
-                title: const Text("Information"),
-                content: Text(message),
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text("Ok"))
-                ],
-              ));
-      setState(() {});
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Erreur"),
+          content: const Text("Une erreur s'est produite. Veuillez réessayer."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("Ok"),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -108,8 +146,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           suffixIcon: suffixIcon,
           border: InputBorder.none,
           hintText: hintText,
-          hintStyle:
-              lightTextStyle.copyWith(fontSize: 15, color: greyLightColor),
+          hintStyle: lightTextStyle.copyWith(fontSize: 15, color: greyLightColor),
         ),
       ),
     );
@@ -148,55 +185,53 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                ButtonPrimary(
-                  text: "S'inscrire",
-                  onPressed: () {
-                    if (fullNameController.text.isEmpty ||
-                        emailController.text.isEmpty ||
-                        passwordController.text.isEmpty) {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text("Attention !!"),
-                          content:
-                              const Text("Veuillez remplir tous les champs"),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: const Text("Ok"),
-                            ),
-                          ],
-                        ),
-                      );
-                    } else {
-                      registerSubmit();
-                    }
-                  },
-                ),
+                _isLoading
+                    ? const CircularProgressIndicator()
+                    : ButtonPrimary(
+                        text: "S'inscrire",
+                        onPressed: () {
+                          if (fullNameController.text.isEmpty ||
+                              emailController.text.isEmpty ||
+                              passwordController.text.isEmpty) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text("Attention !!"),
+                                content: const Text("Veuillez remplir tous les champs"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("Ok"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            registerSubmit();
+                          }
+                        },
+                      ),
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       "Déjà un compte? ",
-                      style: lightTextStyle.copyWith(
-                          color: greyLightColor, fontSize: 15),
+                      style: lightTextStyle.copyWith(color: greyLightColor, fontSize: 15),
                     ),
                     InkWell(
                       onTap: () {
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => const LoginScreen()),
+                          MaterialPageRoute(builder: (context) => const LoginScreen()),
                           (route) => false,
                         );
                       },
                       child: Text(
                         "Se Connecter",
-                        style: boldTextStyle.copyWith(
-                            color: greenColor, fontSize: 15),
+                        style: boldTextStyle.copyWith(color: greenColor, fontSize: 15),
                       ),
                     ),
                   ],
