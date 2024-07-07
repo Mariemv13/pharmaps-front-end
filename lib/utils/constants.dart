@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
+const String google_api_key = "API_KEY";
 const greenColor =  Color(0xff4fc65b);
 const whiteColor = Color(0xffffffff);
 const blackColor = Color(0xff000000);
