@@ -10,13 +10,12 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-
 class _MainScreenState extends State<MainScreen> {
-   int selectIndex = 0;
+  int selectIndex = 0;
 
   final pageList = [
-    const HomeScreen(),
-    const ProfileScreen(),
+    HomeScreen(),
+    ProfileScreen(),
   ];
 
   onTappedItem(int index) {
@@ -24,15 +23,19 @@ class _MainScreenState extends State<MainScreen> {
       selectIndex = index;
     });
   }
+
   @override
   Widget build(BuildContext context) {
+    selectIndex = selectIndex.clamp(0, pageList.length - 1);
+
     return Scaffold(
-       body: pageList.elementAt(selectIndex),
+      body: IndexedStack(
+        index: selectIndex,
+        children: pageList,
+      ),
       bottomNavigationBar: BottomNavigationBar(
-        items:const  [
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Acceuil"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.assignment), label: "Historique"),
           BottomNavigationBarItem(
               icon: Icon(Icons.account_box_rounded), label: "Profile"),
         ],

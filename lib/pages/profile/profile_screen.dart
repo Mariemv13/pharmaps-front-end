@@ -13,10 +13,11 @@ class ProfileScreen extends StatefulWidget {
 
 
 class _ProfileScreenState extends State<ProfileScreen> {
-   String? fullName, email;
+  String? fullName, email;
   getPref() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
+      
       fullName = sharedPreferences.getString(Profile.fullname);
       email = sharedPreferences.getString(Profile.email);
     });
@@ -51,7 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "My Profile",
+                  "Mon profile",
                   style: regulerTextStyle.copyWith(fontSize: 25),
                 ),
                 InkWell(
@@ -72,7 +73,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  fullName!,
+                  "Email",
+                  style: lightTextStyle,
+                ),
+               const SizedBox(
+                  height: 8,
+                ),
+                Text(
+                  fullName ?? 'Nom inconnu',
                   style: boldTextStyle.copyWith(fontSize: 18),
                 ),
               ],
@@ -94,7 +102,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   height: 8,
                 ),
                 Text(
-                  email!,
+                  email?? 'Nom inconnu',
                   style: boldTextStyle.copyWith(fontSize: 18),
                 ),
               ],

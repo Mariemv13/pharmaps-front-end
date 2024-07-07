@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pharmaps/api/url_api.dart';
+import 'package:pharmaps/models/profile.dart';
 import 'package:pharmaps/pages/main/main_screen.dart';
 import 'package:pharmaps/pages/register/register_screen.dart';
 import 'package:pharmaps/utils/constants.dart';
 import 'package:pharmaps/widgets/button_primary.dart';
 import 'package:pharmaps/widgets/logo_space.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -54,9 +56,12 @@ class _LoginScreenState extends State<LoginScreen> {
         if (data is Map<String, dynamic> && data.containsKey('value')) {
           int value = data['value'];
           String message = data['message'];
+          String userId = data['userId'];
+          String fullname = data['fullname'];
+          String email = data['email'];
 
           if (value == 1) {
-
+            await savePref(userId, fullname, email);
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const MainScreen()),
@@ -125,7 +130,12 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     }
   }
-
+  Future<void> savePref(String userId, String fullname, String email) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    await sharedPreferences.setString(Profile.userId, userId);
+    await sharedPreferences.setString(Profile.fullname, fullname);
+    await sharedPreferences.setString(Profile.email, email);
+  }
  
   @override
   Widget build(BuildContext context) {
