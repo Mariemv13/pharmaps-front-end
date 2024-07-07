@@ -73,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Email",
+                  "Nom",
                   style: lightTextStyle,
                 ),
                const SizedBox(
